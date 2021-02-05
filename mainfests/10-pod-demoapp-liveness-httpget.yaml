@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: 10-pod-demoapp-liveness-httpget.yaml
+  labels:
+    app: demoapp
+    release: cannary
+spec:
+  containers:
+  - name: demoapp
+    image: ikubernetes/demoapp:v1.0
+    imagePullPolicy: IfNotPresent
+    ports:
+    - name: http
+      containerPort: 80
+    livenessProbe:
+      httpGet:
+        path: '/livez'
+        port: 80
+        scheme: HTTP
+      initialDelaySeconds: 5
+
+# kubectl  exec 09-pod-demoapp-liveness-tcpsocket -- iptables -A INPUT -p tcp --dport 80 -j REJECT

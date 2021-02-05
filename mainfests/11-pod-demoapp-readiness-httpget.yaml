@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: 11-pod-demoapp-readiness-httpget
+  labels:
+    app: demoapp
+    release: cannary
+spec:
+  containers:
+  - name: demoapp
+    image: ikubernetes/demoapp:v1.0
+    imagePullPolicy: IfNotPresent
+    ports:
+    - name: http
+      containerPort: 80
+    readinessProbe:
+      httpGet:
+        path: '/readyz'
+        port: 80
+        scheme: HTTP
+      initialDelaySeconds: 5
+      timeoutSeconds: 2
+      periodSeconds: 5
+      failureThreshold: 3
+  restartPolicy: Always

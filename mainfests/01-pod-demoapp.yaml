@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: 01-pod-demoapp
+  labels:
+    app: demoapp
+    release: cannary
+spec:
+  containers:
+  - name: demoapp
+    image: ikubernetes/demoapp:v1.0

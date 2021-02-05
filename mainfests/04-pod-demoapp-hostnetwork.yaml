@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: 04-pod-demoapp-hostnetwork
+  labels:
+    app: demoapp
+    release: cannary
+spec:
+  hostNetwork: True
+  containers:
+  - name: demoapp
+    image: ikubernetes/demoapp:v1.0
+    ports:
+    - name: http
+      protocol: TCP
+      containerPort: 80
