@@ -1,0 +1,16 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: pod-demoapp-svc-externalip
+  namespace: default
+spec:
+  type: ClusterIP
+  selector:
+    app: demoapp
+  ports:
+  - name: http
+    protocol: TCP
+    port: 80
+    targetPort: 80
+  externalIPs:
+  - 113.59.224.1xx # 此为集群中某节点拥有公网IP的地址
