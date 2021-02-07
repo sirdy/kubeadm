@@ -1,0 +1,53 @@
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-nfs-demo
+spec:
+  capacity:
+    storage: 5Gi
+  volumeMode: Filesystem
+  accessModes: ["ReadWriteOnce", "ReadWriteMany", "ReadOnlyMany"]
+  persistentVolumeReclaimPolicy: Retain
+  mountOptions:
+    - hard
+    - nfsvers=4.1
+  nfs:
+    path:  "/data/redis001"
+    server: 192.168.1.250
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-nfs-demo-0001
+  namespace: default
+spec:
+  accessModes: ["ReadWriteMany"]
+  volumeMode: Filesystem
+  resources:
+    requests:
+      storage: 3Gi
+    limits:
+      storage: 5Gi
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pv-pvc-nfs-demo
+  namespace: default
+  labels:
+    app: redis
+spec:
+  containers:
+  - name: redis
+    image: redis:alpine
+    ports:
+    - containerPort: 6379
+    volumeMounts:
+    - name: data
+      mountPath: /data
+  volumes:
+  - name: data
+    persistentVolumeClaim:
+      claimName: pvc-nfs-demo-0001
+
