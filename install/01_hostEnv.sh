@@ -6,6 +6,7 @@ cat >> /etc/hosts << EOF
 192.168.1.13 k8s-master03.linux.io k8s-master03 master03 
 192.168.1.21 k8s-node01.linux.io k8s-node01 node01
 192.168.1.22 k8s-node02.linux.io k8s-node02 node02
+192.168.1.23 k8s-node03.linux.io k8s-node03 node03
 EOF
 # 关闭防火墙和selinux
 for i in stop disable ;do systemctl $i firewalld; done
@@ -18,7 +19,7 @@ swapoff -a && sudo sed -i 's/.*swap.*/#&/' /etc/fstab
 mv /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.backup
 curl -o /etc/yum.repos.d/CentOS-Base.repo https://mirrors.aliyun.com/repo/Centos-7.repo
 sed -i -e '/mirrors.cloud.aliyuncs.com/d' -e '/mirrors.aliyuncs.com/d' /etc/yum.repos.d/CentOS-Base.repo
-yum install -y epel-release lrzsz ntpdate wget conntrack ipvsadm ipset iptables curl sysstat net-tools bind-utils vim telnet 
+yum install -y epel-release lrzsz ntpdate wget conntrack ipvsadm ipset iptables curl sysstat net-tools bind-utils vim telnet iscsi-initiator-utils
 
 # 调整内核参数
 cat << EOF  > /etc/sysctl.d/kubernetes.conf

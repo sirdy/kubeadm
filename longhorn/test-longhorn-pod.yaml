@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-longhorn-pod
+  namespace: default
+spec:
+  containers:
+  - name:  test-longhorn-pod
+    image: busybox:latest
+    command:
+      - "/bin/sh"
+    args:
+      - "-c"
+      - "touch /mnt/SUCCESS && exit 0 || exit 1"
+    volumeMounts:
+      - name: longhorn-pvc
+        mountPath: "/mnt"
+  restartPolicy: "Never"
+  volumes:
+    - name: longhorn-pvc
+      persistentVolumeClaim:
+        claimName: test-longhorn-claim
