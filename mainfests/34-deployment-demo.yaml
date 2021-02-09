@@ -1,0 +1,59 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+  name: deployment-demo
+  namespace: default
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: demoapp
+      release: stable
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1 
+  template:
+    metadata:
+      labels:
+        app: demoapp
+        release: stable
+    spec:
+      containers:
+      - name: demoapp
+        image: ikubernetes/demoapp:${VERSION}
+        ports:
+        - name: http
+          containerPort: 80
+        livenessProbe:
+          httpGet:
+            path: '/livez'
+            port: 80
+          initialDelaySeconds: 5
+        readinessProbe:
+          httpGet:
+            path: '/readyz'
+            port: 80
+          initialDelaySeconds: 15
+
+# VERSION=v1.0 envsubst < 34-deployment-demo.yaml |kubectl  apply -f -
+# VERSION=v1.1 envsubst < 34-deployment-demo.yaml |kubectl  apply -f -
+# kubectl  rollout undo  deploy/deployment-demo --to-revision=3
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: deployment-demo-svc
+  namespace: default
+spec:
+  type: ClusterIP
+  selector:
+    app: demoapp
+    release: stable
+  ports:
+  - name: http
+    port: 80
+    targetPort: 80
