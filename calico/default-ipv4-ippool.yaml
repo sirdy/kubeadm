@@ -1,0 +1,17 @@
+apiVersion: projectcalico.org/v3
+kind: IPPool
+metadata:
+  creationTimestamp: "2021-02-17T06:28:30Z"
+  name: default-ipv4-ippool
+  resourceVersion: "836"
+  uid: c81ec9fe-ea21-41c7-942a-4fc8c860ee5d
+spec:
+  blockSize: 24
+  cidr: 10.244.0.0/16
+  ipipMode: "CrossSubnet"
+  natOutgoing: true
+  nodeSelector: all()
+  vxlanMode: Never
+
+#  kubectl calico get ipPool default-ipv4-ippool  -o yaml > default-ipv4-ippool.yaml
+#  calico]# kubectl calico apply -f default-ipv4-ippool.yaml 
