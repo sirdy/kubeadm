@@ -65,3 +65,37 @@ demoapp   NodePort   10.97.120.127   <none>        80:32573/TCP   42m
 ~]# curl http://192.168.1.21:32573/
 iKubernetes demoapp v1.0 !! ClientIP: 10.244.2.0, ServerName: demoapp-5f7d8f9847-9882t, ServerIP: 10.244.1.4!
 ```
+
+#### UserAccount
+
+```
+#
+~]# cd /etc/kubernetes/ && mkdir usercerts && cd usercerts
+usercerts]# (umask 077; openssl genrsa -out linux.key 2048)
+usercerts]# openssl req -new  -key linux.key -out linux.csr -subj "/CN=linux/O=kubeusers"
+usercerts]# openssl  x509 -req -days 3650 -CA /etc/kubernetes/pki/ca.crt -CAkey /etc/kubernetes/pki/ca.key  -CAcreateserial -in linux.csr -out linux.crt
+Signature ok
+subject=/CN=linux/O=kubeusers
+Getting CA Private Key
+usercerts]# openssl  x509  -in  linux.crt  -text -noout
+usercerts]# kubectl  config set-cluster kubecluster --server=https://k8s-vip.linux.io:6443 --embed-certs --certificate-authority=/etc/kubernetes/pki/ca.crt  --kubeconfig=./linux-kubeconfig
+usercerts]# kubectl  config set-credentials linux  --client-certificate=./linux.crt  --client-key=./linux.key  --embed-certs=true --kubeconfig=./linux-kubeconfig
+usercerts]# kubectl  config set-context 'linux@kubecluster' --user=linux --cluster=kubecluster --kubeconfig=./linux-kubeconfig
+usercerts]# kubectl  config use-context linux@kubecluster --kubeconfig=./linux-kubeconfig
+usercerts]# kubectl  create clusterrolebinding linux-admin --user=linux --clusterrole=admin # 名称空间级别的管理员
+usercerts]# kubectl  create rolebinding linux-admin-ns --user=linux --clusterrole=admin -n dev # dev名称空间的管理员
+#usercerts]# kubectl  create clusterrolebinding linux-clusteradmin --user=linux --clusterrole=cluster-admin # 集群级别的管理员
+usercerts]# kubectl  get pod -A  --kubeconfig=./linux-kubeconfig
+usercerts]# export KUBECONFIG="/etc/kubernetes/usercerts/linux-kubeconfig:$HOME/.kube/config" # 合并多个kubeconfig文件
+usercerts]# kubectl config view --merge --flatten > /tmp/newkubeconfig
+
+usercerts]# kubectl  config use-context kubernetes-admin@kubernetes
+```
+
+#### ServiceAccount
+
+```
+~]# kubectl  create serviceaccount dev-admin -n dev
+~]# kubectl  create clusterrolebinding dev-admin --clusterrole=admin --serviceaccount=dev:dev-admin
+
+```
