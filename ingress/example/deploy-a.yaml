@@ -1,0 +1,38 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deploy-a
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: deploy-a
+      release: stable
+  template:
+    metadata:
+      labels:
+        app: deploy-a
+        release: stable
+    spec:
+      containers:
+      - name: demoapp
+        image: ikubernetes/demoapp:v1.0
+        ports:
+        - name: http
+          containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: deploy-a-svc
+  namespace: default
+spec:
+  selector:
+    app: deploy-a
+    release: stable
+  ports:
+  - name: http
+    port: 80
+    targetPort: 80
