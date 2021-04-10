@@ -1,0 +1,31 @@
+# (umask 077; openssl genrsa -out sirdy-a.key 2048)
+# openssl  req -new -x509 -key sirdy-a.key  -out sirdy-a.crt -subj "/CN=www.sirdy-a.io" -days 3650
+# kubectl  create secret tls sirdy-a-tls --cert=./sirdy-a.crt --key=./sirdy-a.key 
+# ]# kubectl  get secret sirdy-a-tls
+# NAME          TYPE                DATA   AGE
+# sirdy-a-tls   kubernetes.io/tls   2      26s
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ingress-a-tls
+  namespace: default
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+spec:
+  rules:
+  - host: www.sirdy-a.io
+    http:
+      paths:
+      - path:
+        backend:
+          serviceName: deploy-a-svc
+          servicePort: 80
+  tls:
+  - hosts:
+    - www.sirdy-a.io
+    secretName: sirdy-a-tls
+  
+# kubectl  apply -f ingress-a-tls.yaml
+# # curl -k -H "Host: www.sirdy-a.io" https://192.168.1.23 
+# iKubernetes demoapp v1.0 !! ClientIP: 10.244.2.8, ServerName: deploy-a-5b65fb4c69-cmjbt, ServerIP: 10.244.2.9!

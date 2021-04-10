@@ -1,0 +1,24 @@
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ingress-a
+  namespace: default
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+spec:
+  rules:
+  - host: www.sirdy-a.io
+    http:
+      paths:
+      - path: 
+        backend:
+          serviceName: deploy-a-svc
+          servicePort: 80
+  - host: www.sirdy-b.io
+    http:
+      paths:
+      - path: 
+        backend:
+          serviceName: deploy-b-svc
+          servicePort: 80
